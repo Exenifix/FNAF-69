@@ -4,7 +4,7 @@ public class DonutBehaviour : MonoBehaviour
 {
     private GameManager gameManager;
     private AudioSource coinCollectSound;
-    public int rotationSpeed = 60;
+    public float rotationSpeed = 60;
     // Start is called before the first frame update
     void Start()
     {

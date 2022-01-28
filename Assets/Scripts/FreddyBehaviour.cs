@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FreddyBehaviour : MonoBehaviour
 {
-    public int pushPower = 200;
+    public int pushPower;
     private Rigidbody2D rigidBody;
     private GameManager gameManager;
     // Start is called before the first frame update

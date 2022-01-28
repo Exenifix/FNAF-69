@@ -82,6 +82,9 @@ public class GameManager : MonoBehaviour
     {
         while (gameActive) {
             yield return new WaitForSeconds(Random.Range(0.3f, 0.8f));
+            if (!gameActive) {
+                break;
+            }
             Instantiate(donut, RandomVector(), donut.transform.rotation);
         }
     }
