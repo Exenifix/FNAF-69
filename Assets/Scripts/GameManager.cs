@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public bool gameActive = false;
-    public GameObject freddy, donut, amogus;
-    public GameObject[] buttons;
+    public GameObject freddy, amogus, menu, recordMenu;
+    [Tooltip("Normal, Bad, Good")]
+    public GameObject[] donuts;
     private AudioSource pooPlayer;
     private FreddyBehaviour freddyBehaviour;
-    public int score = 0;
+    private int score = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,17 +24,11 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void SetAllButtonsTo(bool state) {
-        foreach (GameObject button in buttons) {
-            button.SetActive(state);
-        }
-    }
-
     public void StartGame()
     {
         score = 0;
         UpdateScore();
-        SetAllButtonsTo(false);
+        menu.SetActive(false);
         gameActive = true;
         Instantiate(freddy);
         freddyBehaviour = GameObject.FindGameObjectWithTag("freddy").GetComponent<FreddyBehaviour>();
@@ -62,7 +57,11 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         pooPlayer.Stop();
         amogus.SetActive(false);
-        SetAllButtonsTo(true);
+        if (GameDataManager.IsRecord(score)) {
+            RegisterNewRecord();
+        } else {
+            menu.SetActive(true);
+        }
     }
 
     public void PushFreddy()
@@ -71,11 +70,25 @@ public class GameManager : MonoBehaviour
     }
 
     public void PushFreddyHigher() {
-        freddyBehaviour.PushUp(500);
+        freddyBehaviour.PushUp(600);
     }
 
     public void PushFreddyDown() {
         freddyBehaviour.PushUp(-200);
+    }
+
+    private void RegisterNewRecord() {
+        recordMenu.SetActive(true);
+    }
+
+    public void SubmitNewRecord() {
+        string text = GameObject.Find("NameInput").GetComponent<TMP_InputField>().text;
+        if (text.Length == 0) {
+            text = "Anonymous";
+        }
+        GameDataManager.AddScore(text, score);
+        recordMenu.SetActive(false);
+        menu.SetActive(true);
     }
 
     private IEnumerator GenerateBuffs()
@@ -85,7 +98,16 @@ public class GameManager : MonoBehaviour
             if (!gameActive) {
                 break;
             }
-            Instantiate(donut, RandomVector(), donut.transform.rotation);
+            int donutIndicy = Random.Range(1, 11);
+            GameObject donutPrefab;
+            if (donutIndicy < 7) {
+                donutPrefab = donuts[0];
+            } else if (donutIndicy > 7 && donutIndicy < 9) {
+                donutPrefab = donuts[1];
+            } else {
+                donutPrefab = donuts[2];
+            }
+            Instantiate(donutPrefab, new Vector3(Random.Range(-4.5f, 4.5f), -11, 0), donutPrefab.transform.rotation);
         }
     }
 
@@ -98,6 +120,10 @@ public class GameManager : MonoBehaviour
     {
         score += _score;
         UpdateScore();
+    }
+
+    public void RemoveScore(int _score) {
+        AddScore(-_score);
     }
 
     private Vector3 RandomVector()
