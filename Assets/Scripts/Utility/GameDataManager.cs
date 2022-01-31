@@ -8,7 +8,7 @@ public static class GameDataManager {
         List<KeyValuePair<int, string>> leaderboard = gameData.leaderboard.ToList();
         leaderboard.Sort(
             delegate(KeyValuePair<int, string> pair1, KeyValuePair<int, string> pair2) {
-                return pair1.Key.CompareTo(pair2.Key);
+                return pair2.Key.CompareTo(pair1.Key);
             }
         );
         foreach (KeyValuePair<int, string> kvp in leaderboard) {
