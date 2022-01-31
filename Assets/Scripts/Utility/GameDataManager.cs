@@ -3,8 +3,18 @@ using System.Linq;
 
 public static class GameDataManager {
     private static GameData gameData = GameData.GetFromFile();
-    public static Dictionary<string, int> GetLeaderboard() {
-        return gameData.leaderboard;
+    public static Dictionary<int, string> GetLeaderboard() {
+        Dictionary<int, string> dictLeaderboard = new Dictionary<int, string>();
+        List<KeyValuePair<int, string>> leaderboard = gameData.leaderboard.ToList();
+        leaderboard.Sort(
+            delegate(KeyValuePair<int, string> pair1, KeyValuePair<int, string> pair2) {
+                return pair1.Key.CompareTo(pair2.Key);
+            }
+        );
+        foreach (KeyValuePair<int, string> kvp in leaderboard) {
+            dictLeaderboard[kvp.Key] = kvp.Value;
+        }
+        return dictLeaderboard;
     }
 
     public static int GetMoney() {
@@ -26,16 +36,16 @@ public static class GameDataManager {
     }
 
     public static bool IsRecord(int score) {
-        return GetLowestScore().Value < score || gameData.leaderboard.Count < 10;
+        return GetLowestScore().Key < score || gameData.leaderboard.Count < 10;
     }
 
     public static void AddScore(string name, int score) {
         if (gameData.leaderboard.Count > 10) {
-            KeyValuePair<string, int> lowest = GetLowestScore();
+            KeyValuePair<int, string> lowest = GetLowestScore();
             gameData.leaderboard.Remove(lowest.Key);
         }
 
-        gameData.leaderboard[name] = score;
+        gameData.leaderboard[score] = name;
         gameData.Save();
     }
 
@@ -44,13 +54,13 @@ public static class GameDataManager {
         gameData.Save();
     }
 
-    private static KeyValuePair<string, int> GetLowestScore() {
+    private static KeyValuePair<int, string> GetLowestScore() {
         if (gameData.leaderboard.Count == 0) {
-            return new KeyValuePair<string, int>(null, 0);
+            return new KeyValuePair<int, string>(0, null);
         }
-        KeyValuePair<string, int> minimum = gameData.leaderboard.First();
-        foreach (KeyValuePair<string, int> kvp in gameData.leaderboard) {
-            if (kvp.Value < minimum.Value) {
+        KeyValuePair<int, string> minimum = gameData.leaderboard.First();
+        foreach (KeyValuePair<int, string> kvp in gameData.leaderboard) {
+            if (kvp.Key < minimum.Key) {
                 minimum = kvp;
             }
         }

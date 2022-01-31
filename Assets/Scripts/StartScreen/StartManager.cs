@@ -30,13 +30,13 @@ public class StartManager : MonoBehaviour
     }
 
     public void ShowStats() {
-        Dictionary<string, int> stats = GameDataManager.GetLeaderboard();
+        Dictionary<int, string> stats = GameDataManager.GetLeaderboard();
         mainMenu.SetActive(false);
         statsMenu.SetActive(true);
         string text = "";
         if (stats.Count > 0) {
-            foreach (KeyValuePair<string, int> kvp in stats) {
-                text += kvp.Key + " -- " + kvp.Value + "\n";
+            foreach (KeyValuePair<int, string> kvp in stats) {
+                text += kvp.Value + " -- " + kvp.Key + "\n";
             }
         } else {
             text = "No players lmao";

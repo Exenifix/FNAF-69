@@ -6,16 +6,20 @@ using UnityEngine;
 
 [Serializable]
 public class GameData {
-    public Dictionary<string, int> leaderboard;
+    private static int version = 1;
+    public Dictionary<int, string> leaderboard;
     public int money;
-    private static readonly string dataPath = Application.persistentDataPath + "/GameData.dat";
+    private static readonly string dataPath = Application.persistentDataPath + "/GameData1.dat";
 
     private GameData() {
         this.money = 0;
-        this.leaderboard = new Dictionary<string, int>();
+        this.leaderboard = new Dictionary<int, string>();
     }
 
     public static GameData GetFromFile() {
+        if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
+            File.Delete(Application.persistentDataPath + "/GameData.dat");
+        }
         BinaryFormatter bf = new BinaryFormatter();
         if (!File.Exists(dataPath)) {
             GameData gameData = new GameData();
